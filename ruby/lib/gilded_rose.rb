@@ -4,8 +4,19 @@ class GildedRose
     @items = items
   end
 
-  def update_quality()
+  def update_quality
     @items.each do |item|
+
+      case item.name
+      when 'Normal Item'
+        return normal_item_update_quality(item)
+      when 'Aged Brie'
+        return brie_update_quality(item)
+      else
+        # type code here
+      end
+
+
       if item.name != "Aged Brie" and item.name != "Backstage passes to a TAFKAL80ETC concert"
         if item.quality > 0
           if item.name != "Sulfuras, Hand of Ragnaros"
@@ -51,6 +62,23 @@ class GildedRose
       end
     end
   end
+
+  def normal_item_update_quality(item)
+    item.sell_in -= 1
+    return if item.quality == 0
+
+    item.quality -= 1
+    item.quality -= 1 if item.sell_in <= 0
+  end
+
+  def brie_update_quality(item)
+    item.sell_in -= 1
+    return if item.quality >= 50
+
+    item.quality += 1
+    item.quality += 1 if item.sell_in <= 0
+  end
+
 end
 
 class Item
