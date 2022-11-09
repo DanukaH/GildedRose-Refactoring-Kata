@@ -9,18 +9,18 @@ class GildedRose
     @items.each do |item|
       case item.name
       when 'Aged Brie'
-        return BrieUpdater.new(item).update_quality
+        return AgedBrie.new(item).update_quality
       when 'Sulfuras, Hand of Ragnaros'
-        return SulfurasUpdater.new(item).update_quality
+        return Sulfuras.new(item).update_quality
       when 'Backstage passes to a TAFKAL80ETC concert'
-        return BackstageUpdater.new(item).update_quality
+        return Backstage.new(item).update_quality
       else
-        return NormalItemUpdater.new(item).update_quality
+        return NormalItem.new(item).update_quality
       end
     end
   end
 
-  class BrieUpdater
+  class AgedBrie
     attr_accessor :item
 
     def initialize(item)
@@ -34,7 +34,7 @@ class GildedRose
     end
   end
 
-  class BackstageUpdater
+  class Backstage
     attr_accessor :item
 
     def initialize(item)
@@ -52,7 +52,7 @@ class GildedRose
     end
   end
 
-  class SulfurasUpdater
+  class Sulfuras
     attr_accessor :item
 
     def initialize(item)
@@ -63,7 +63,7 @@ class GildedRose
     end
   end
 
-  class NormalItemUpdater
+  class NormalItem
     attr_accessor :item
 
     def initialize(item)
