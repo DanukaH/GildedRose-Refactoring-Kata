@@ -1,4 +1,5 @@
 class GildedRose
+  attr_accessor :items
 
   def initialize(items)
     @items = items
@@ -6,50 +7,78 @@ class GildedRose
 
   def update_quality
     @items.each do |item|
-
       case item.name
-      when 'Normal Item'
-        return normal_item_update_quality(item)
       when 'Aged Brie'
-        return brie_update_quality(item)
+        return BrieUpdater.new(item).update_quality
       when 'Sulfuras, Hand of Ragnaros'
-        return sulfuras_update_quality(item)
+        return SulfurasUpdater.new(item).update_quality
       when 'Backstage passes to a TAFKAL80ETC concert'
-        return backstage_update_quality(item)
+        return BackstageUpdater.new(item).update_quality
       else
-        # type code here
+        return NormalItemUpdater.new(item).update_quality
       end
     end
   end
 
-  def normal_item_update_quality(item)
-    item.sell_in -= 1
-    return if item.quality == 0
+  class BrieUpdater
+    attr_accessor :item
 
-    item.quality -= 1
-    item.quality -= 1 if item.sell_in <= 0
+    def initialize(item)
+      @item = item
+    end
+
+    def update_quality
+      item.quality += 1 if item.quality < 50
+      item.sell_in -= 1
+      item.quality += 1 if item.sell_in < 0 && item.quality < 50
+    end
   end
 
-  def brie_update_quality(item)
-    item.sell_in -= 1
-    return if item.quality >= 50
+  class BackstageUpdater
+    attr_accessor :item
 
-    item.quality += 1
-    item.quality += 1 if item.sell_in <= 0
+    def initialize(item)
+      @item = item
+    end
+
+    def update_quality
+      item.sell_in -= 1
+      return if item.quality >= 50
+      return item.quality = 0 if item.sell_in < 0
+
+      item.quality += 1
+      item.quality += 1 if item.sell_in < 10
+      item.quality += 1 if item.sell_in < 5
+    end
   end
 
-  def sulfuras_update_quality(item)
+  class SulfurasUpdater
+    attr_accessor :item
+
+    def initialize(item)
+      @item = item
+    end
+
+    def update_quality
+    end
   end
 
-  def backstage_update_quality(item)
-    item.sell_in -= 1
-    return if item.quality >= 50
-    return item.quality = 0 if item.sell_in < 0
+  class NormalItemUpdater
+    attr_accessor :item
 
-    item.quality += 1
-    item.quality += 1 if item.sell_in < 10
-    item.quality += 1 if item.sell_in < 5
+    def initialize(item)
+      @item = item
+    end
+
+    def update_quality
+      item.sell_in -= 1
+      return if item.quality == 0
+
+      item.quality -= 1
+      item.quality -= 1 if item.sell_in <= 0
+    end
   end
+
 end
 
 class Item
