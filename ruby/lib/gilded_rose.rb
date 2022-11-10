@@ -7,16 +7,11 @@ class GildedRose
 
   def update_quality
     @items.each do |item|
-      case item.name
-      when 'Aged Brie'
-        return AgedBrie.new(item).update_quality
-      when 'Sulfuras, Hand of Ragnaros'
-        return Sulfuras.new(item).update_quality
-      when 'Backstage passes to a TAFKAL80ETC concert'
-        return Backstage.new(item).update_quality
-      else
-        return NormalItem.new(item).update_quality
-      end
+      {
+        'Aged Brie' => AgedBrie,
+        'Sulfuras, Hand of Ragnaros' => Sulfuras,
+        'Backstage passes to a TAFKAL80ETC concert' => BackstagePasses
+      }.fetch(item.name, NormalItem).new(item).update_quality
     end
   end
 
@@ -34,7 +29,7 @@ class GildedRose
     end
   end
 
-  class Backstage
+  class BackstagePasses
     attr_accessor :item
 
     def initialize(item)
@@ -90,7 +85,7 @@ class Item
     @quality = quality
   end
 
-  def to_s()
+  def to_s
     "#{@name}, #{@sell_in}, #{@quality}"
   end
 end
