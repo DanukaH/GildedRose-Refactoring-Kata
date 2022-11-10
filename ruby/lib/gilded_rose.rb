@@ -7,70 +7,80 @@ class GildedRose
 
   def update_quality
     @items.each do |item|
-      {
-        'Aged Brie' => AgedBrie,
-        'Sulfuras, Hand of Ragnaros' => Sulfuras,
-        'Backstage passes to a TAFKAL80ETC concert' => BackstagePasses
-      }.fetch(item.name, NormalItem).new(item).update_quality
+      Updater.for(item).update_quality
     end
   end
 
-  class AgedBrie
-    attr_accessor :item
+  private
 
-    def initialize(item)
-      @item = item
+  module Updater
+    class AgedBrie
+      attr_accessor :item
+
+      def initialize(item)
+        @item = item
+      end
+
+      def update_quality
+        item.quality += 1 if item.quality < 50
+        item.sell_in -= 1
+        item.quality += 1 if item.sell_in < 0 && item.quality < 50
+      end
     end
 
-    def update_quality
-      item.quality += 1 if item.quality < 50
-      item.sell_in -= 1
-      item.quality += 1 if item.sell_in < 0 && item.quality < 50
-    end
-  end
+    class BackstagePasses
+      attr_accessor :item
 
-  class BackstagePasses
-    attr_accessor :item
+      def initialize(item)
+        @item = item
+      end
 
-    def initialize(item)
-      @item = item
-    end
+      def update_quality
+        item.sell_in -= 1
+        return if item.quality >= 50
+        return item.quality = 0 if item.sell_in < 0
 
-    def update_quality
-      item.sell_in -= 1
-      return if item.quality >= 50
-      return item.quality = 0 if item.sell_in < 0
-
-      item.quality += 1
-      item.quality += 1 if item.sell_in < 10
-      item.quality += 1 if item.sell_in < 5
-    end
-  end
-
-  class Sulfuras
-    attr_accessor :item
-
-    def initialize(item)
-      @item = item
+        item.quality += 1
+        item.quality += 1 if item.sell_in < 10
+        item.quality += 1 if item.sell_in < 5
+      end
     end
 
-    def update_quality
+    class Sulfuras
+      attr_accessor :item
+
+      def initialize(item)
+        @item = item
+      end
+
+      def update_quality
+      end
     end
-  end
 
-  class NormalItem
-    attr_accessor :item
+    class NormalItem
+      attr_accessor :item
 
-    def initialize(item)
-      @item = item
+      def initialize(item)
+        @item = item
+      end
+
+      def update_quality
+        item.sell_in -= 1
+        return if item.quality == 0
+
+        item.quality -= 1
+        item.quality -= 1 if item.sell_in <= 0
+      end
     end
 
-    def update_quality
-      item.sell_in -= 1
-      return if item.quality == 0
+    NAME_TO_UPDATE = {
+      'Aged Brie' => AgedBrie,
+      'Sulfuras, Hand of Ragnaros' => Sulfuras,
+      'Backstage passes to a TAFKAL80ETC concert' => BackstagePasses
+    }
 
-      item.quality -= 1
-      item.quality -= 1 if item.sell_in <= 0
+    def self.for(item)
+      NAME_TO_UPDATE.fetch(item.name, NormalItem).new(item)
     end
   end
 
