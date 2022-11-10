@@ -1,6 +1,4 @@
-#require "spec_helper"
-
-require_relative '../gilded_rose'
+require_relative '../lib/gilded_rose'
 
 RSpec.describe GildedRose do
   describe "#update_quality" do
@@ -229,4 +227,53 @@ RSpec.describe GildedRose do
     end
   end
 
+  context "Conjured Mana" do
+    it "before sell date" do
+      items = [Item.new("Conjured Mana Cake", 5, 10)]
+
+      GildedRose.new(items).update_quality
+
+      expect(items[0]).to have_attributes(sell_in: 4, quality: 8)
+    end
+
+    it "before sell date at zero quality" do
+      items = [Item.new("Conjured Mana Cake", 5, 0)]
+
+      GildedRose.new(items).update_quality
+
+      expect(items[0]).to have_attributes(sell_in: 4, quality: 0)
+    end
+
+    it "on sell date" do
+      items = [Item.new("Conjured Mana Cake", 0, 10)]
+
+      GildedRose.new(items).update_quality
+
+      expect(items[0]).to have_attributes(sell_in: -1, quality: 6)
+    end
+
+    it "on sell date at zero quality" do
+      items = [Item.new("Conjured Mana Cake", 0, 0)]
+
+      GildedRose.new(items).update_quality
+
+      expect(items[0]).to have_attributes(sell_in: -1, quality: 0)
+    end
+
+    it "after sell date" do
+      items = [Item.new("Conjured Mana Cake", -10, 10)]
+
+      GildedRose.new(items).update_quality
+
+      expect(items[0]).to have_attributes(sell_in: -11, quality: 6)
+    end
+
+    it "after sell date at zero quality" do
+      items = [Item.new("Conjured Mana Cake", -10, 0)]
+
+      GildedRose.new(items).update_quality
+
+      expect(items[0]).to have_attributes(sell_in: -11, quality: 0)
+    end
+  end
 end
