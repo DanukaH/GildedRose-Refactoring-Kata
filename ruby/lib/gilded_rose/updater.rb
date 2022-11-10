@@ -59,10 +59,27 @@ class GildedRose
       end
     end
 
+    class Conjured
+      attr_accessor :item
+
+      def initialize(item)
+        @item = item
+      end
+
+      def update_quality
+        item.sell_in -= 1
+        return if item.quality == 0
+
+        item.quality -= 2
+        item.quality -= 2 if item.sell_in <= 0
+      end
+    end
+
     NAME_TO_UPDATE = {
       'Aged Brie' => AgedBrie,
       'Sulfuras, Hand of Ragnaros' => Sulfuras,
-      'Backstage passes to a TAFKAL80ETC concert' => BackstagePasses
+      'Backstage passes to a TAFKAL80ETC concert' => BackstagePasses,
+      'Conjured Mana Cake' => Conjured
     }
 
     def self.for(item)
